@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <script>
+        function fetchTodos() {
+            fetch('/api/todos')
+                .then(response => response.json())
+                .then(data => {
+                    let todosList = document.getElementById("todosList");
+                    todosList.innerHTML = "";
+                    data.forEach(todo => {
+                        let li = document.createElement("li");
+                        li.innerText = `${todo.name}, Age: ${todo.age}, Marks: ${todo.marks}`;
+                        todosList.appendChild(li);
+                    });
+                });
+        }
+
+        function addTodo() {
+            let name = document.getElementById("name").value;
+            let age = document.getElementById("age").value;
+            let marks = document.getElementById("marks").value;
+
+            let todo = { name: name, age: age, marks: marks };
+
+            fetch('/api/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(todo)
+            }).then(response => {
+                if (response.ok) {
+                    fetchTodos();
+                }
+            });
+        }
+
+        window.onload = function () {
+            fetchTodos();
+        }
+    </script>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <form onsubmit="event.preventDefault(); addTodo();">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="number" id="age" placeholder="Age" required>
+        <input type="number" id="marks" placeholder="Marks" required>
+        <button type="submit">Add Todo</button>
+    </form>
+
+    <ul id="todosList"></ul>
+</body>
+</html>
